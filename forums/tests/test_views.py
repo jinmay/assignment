@@ -200,3 +200,45 @@ def test_question_updateview_should_prevent_delete_from_different_user(user2, qu
 
     res = client.delete(f'/questions/{question1.id}')
     assert res.status_code == 403
+
+
+@pytest.mark.django_db
+def test_comment_listcreate_view_should_return_zero_comment_list(user2, question1):
+    client = APIClient()
+    client.force_authenticate(user2)
+
+    res = client.get(f'/questions/{question1.id}/comments')
+    assert res.status_code == 200
+
+    content = get_json_response(res)
+    assert len(content) == 0
+
+
+@pytest.mark.django_db
+def test_comment_listcreate_view_should_return_comment_list(user2, question1, comment1):
+    client = APIClient()
+    client.force_authenticate(user2)
+
+    res = client.get(f'/questions/{question1.id}/comments')
+    assert res.status_code == 200
+
+    content = get_json_response(res)
+    assert len(content) == 1
+    assert content[0]['body'] == comment1.body
+    assert content[0]['owner'] == comment1.owner.username
+
+
+@pytest.mark.django_db
+def test_comment_listcreate_view_should_create_comment(user2, question1):
+    client = APIClient()
+    client.force_authenticate(user2)
+
+    data = {
+        'body': 'new comment body',
+    }
+    res = client.post(f'/questions/{question1.id}/comments', data=data)
+    assert res.status_code == 201
+
+    content = get_json_response(res)
+    assert content['body'] == 'new comment body'
+    assert content['owner'] == user2.username

@@ -2,7 +2,7 @@ import pytest
 
 from django.contrib.auth import get_user_model
 
-from forums.models import Question
+from forums.models import Question, Comment
 
 
 User = get_user_model()
@@ -48,3 +48,13 @@ def question2(user1):
         owner=user1
     )
     return q
+
+
+@pytest.fixture
+def comment1(question1, user1):
+    c = Comment.objects.create(
+        question=question1,
+        body='comment body #1',
+        owner=user1,
+    )
+    return c
