@@ -25,6 +25,64 @@ def test_question_listcreateview_should_return_question_list(question1, user1):
 
 
 @pytest.mark.django_db
+def test_question_listcreateview_should_return_two_question(question1, question2, user1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    res = client.get('/questions/')
+    assert res.status_code == 200
+
+    content = get_json_response(res)
+    assert len(content) == 2
+
+    assert content[0]['title'] == question1.title
+    assert content[0]['body'] == question1.body
+    assert content[0]['owner'] == question1.owner.username
+
+    assert content[1]['title'] == question2.title
+    assert content[1]['body'] == question2.body
+    assert content[1]['owner'] == question2.owner.username
+
+
+@pytest.mark.django_db
+def test_question_listcreateview_should_return_question_by_title_search(question1, question2, user1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    data = {
+        'search': '#2'
+    }
+    res = client.get('/questions/', data=data)
+    assert res.status_code == 200
+
+    content = get_json_response(res)
+    assert len(content) == 1
+
+    assert content[0]['title'] == question2.title
+    assert content[0]['body'] == question2.body
+    assert content[0]['owner'] == question2.owner.username
+
+
+@pytest.mark.django_db
+def test_question_listcreateview_should_return_question_by_body_search(question1, question2, user1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    data = {
+        'search': '#2'
+    }
+    res = client.get('/questions/', data=data)
+    assert res.status_code == 200
+
+    content = get_json_response(res)
+    assert len(content) == 1
+
+    assert content[0]['title'] == question2.title
+    assert content[0]['body'] == question2.body
+    assert content[0]['owner'] == question2.owner.username
+
+
+@pytest.mark.django_db
 def test_question_listcreateview_should_return_empty(user1):
     client = APIClient()
     client.force_authenticate(user1)
