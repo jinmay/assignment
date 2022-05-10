@@ -8,7 +8,6 @@ from forums.models import Question
 User = get_user_model()
 
 
-
 @pytest.fixture
 def user1():
     user = User.objects.create_user(**{
@@ -16,6 +15,17 @@ def user1():
         'password': 'secret',
         'first_name': '길동',
         'last_name': '홍',
+    })
+    return user
+
+
+@pytest.fixture
+def user2():
+    user = User.objects.create_user(**{
+        'username': 'user2',
+        'password': 'secret',
+        'first_name': '나다',
+        'last_name': '가',
     })
     return user
 

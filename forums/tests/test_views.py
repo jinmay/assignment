@@ -64,3 +64,81 @@ def test_quest_listcreateview_create_new_question(user1):
 #     }
 #     res = client.post('/questions/', data=data)
 #     assert res.status_code == 302
+
+
+@pytest.mark.django_db
+def test_question_retrieveview_should_return_one_question(user1, question1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    res = client.get(f'/questions/{question1.id}')
+    assert res.status_code == 200
+
+    content = get_json_response(res)
+    assert content['title'] == question1.title
+    assert content['body'] == question1.body
+    assert content['owner'] == question1.owner.username
+
+
+@pytest.mark.django_db
+def test_question_updateview_should_update_title(user1, question1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    data = {
+        'title': 'updated title'
+    }
+    res = client.patch(f'/questions/{question1.id}', data=data)
+    assert res.status_code == 200
+
+    content = get_json_response(res)
+    assert content['title'] == 'updated title'
+    assert content['body'] == question1.body
+    assert content['owner'] == question1.owner.username
+
+
+@pytest.mark.django_db
+def test_question_updateview_should_update_body(user1, question1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    data = {
+        'body': 'updated body'
+    }
+    res = client.patch(f'/questions/{question1.id}', data=data)
+    assert res.status_code == 200
+
+    content = get_json_response(res)
+    assert content['title'] == question1.title
+    assert content['body'] == 'updated body'
+    assert content['owner'] == question1.owner.username
+
+
+@pytest.mark.django_db
+def test_question_updateview_should_delete_question(user1, question1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    res = client.delete(f'/questions/{question1.id}')
+    assert res.status_code == 204
+
+
+@pytest.mark.django_db
+def test_question_updateview_should_prevent_update_from_different_user(user2, question1):
+    client = APIClient()
+    client.force_authenticate(user2)
+
+    data = {
+        'title': 'updated title'
+    }
+    res = client.patch(f'/questions/{question1.id}', data=data)
+    assert res.status_code == 403
+
+
+@pytest.mark.django_db
+def test_question_updateview_should_prevent_delete_from_different_user(user2, question1):
+    client = APIClient()
+    client.force_authenticate(user2)
+
+    res = client.delete(f'/questions/{question1.id}')
+    assert res.status_code == 403
