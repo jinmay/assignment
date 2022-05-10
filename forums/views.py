@@ -16,4 +16,9 @@ class QuestionListCreateView(ListCreateAPIView):
 
 
 class QuestionView(RetrieveUpdateDestroyAPIView):
-    pass
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
+
+    def perform_destroy(self, instance):
+        instance.check_permission(self.request.user)
+        super().perform_destroy(instance)

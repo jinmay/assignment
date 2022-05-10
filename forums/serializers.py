@@ -18,3 +18,8 @@ class QuestionSerializer(s.ModelSerializer):
         request = self.context['request']
         validated_data['owner'] = request.user
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        request = self.context['request']
+        instance.check_permission(request.user)
+        return super().update(instance, validated_data)

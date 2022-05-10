@@ -5,4 +5,5 @@ from . import views
 
 urlpatterns = [
     path('', views.QuestionListCreateView.as_view()),
+    path('<int:pk>', views.QuestionView.as_view()),
 ]
