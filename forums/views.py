@@ -1,5 +1,7 @@
-from rest_framework.generics import ListCreateAPIView
-
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from .models import (
     Question,
 )
@@ -11,3 +13,7 @@ from .serializers import (
 class QuestionListCreateView(ListCreateAPIView):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
+
+
+class QuestionView(RetrieveUpdateDestroyAPIView):
+    pass

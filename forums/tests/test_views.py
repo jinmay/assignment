@@ -21,6 +21,7 @@ def test_question_listcreateview_should_return_question_list(question1, user1):
 
     assert content[0]['title'] == question1.title
     assert content[0]['body'] == question1.body
+    assert content[0]['owner'] == question1.owner.username
 
 
 @pytest.mark.django_db
@@ -47,14 +48,19 @@ def test_quest_listcreateview_create_new_question(user1):
     res = client.post('/questions/', data=data)
     assert res.status_code == 201
 
+    content = get_json_response(res)
+    assert content['title'] == 'new question #1'
+    assert content['body'] == 'new body #1'
+    assert content['owner'] == user1.username
 
-@pytest.mark.django_db
-def test_quest_listcreateview_should_redirect_for_login():
-    client = APIClient()
 
-    data = {
-        'title': 'new question #1',
-        'body': 'new body #1',
-    }
-    res = client.post('/questions/', data=data)
-    assert res.status_code == 302
+# @pytest.mark.django_db
+# def test_quest_listcreateview_should_redirect_for_login():
+#     client = APIClient()
+#
+#     data = {
+#         'title': 'new question #1',
+#         'body': 'new body #1',
+#     }
+#     res = client.post('/questions/', data=data)
+#     assert res.status_code == 302

@@ -4,7 +4,7 @@ from .models import Question
 
 
 class QuestionSerializer(s.ModelSerializer):
-    owner = s.HiddenField(default=s.CurrentUserDefault())
+    owner = s.SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         model = Question
@@ -13,3 +13,8 @@ class QuestionSerializer(s.ModelSerializer):
             'body',
             'owner',
         )
+
+    def create(self, validated_data):
+        request = self.context['request']
+        validated_data['owner'] = request.user
+        return super().create(validated_data)
