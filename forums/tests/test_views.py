@@ -278,3 +278,14 @@ def test_question_likeview_should_toggle(user1, question1):
 
     res = client.post(f'/questions/{question1.id}/likes')
     assert res.status_code == 201
+
+
+@pytest.mark.django_db
+def test_haha(user1, question1, question2):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    res = client.post(f'/questions/{question2.id}/likes')
+    assert res.status_code == 201
+
+    res = client.get('/questions/')
