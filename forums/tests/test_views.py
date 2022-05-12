@@ -242,3 +242,39 @@ def test_comment_listcreate_view_should_create_comment(user2, question1):
     content = get_json_response(res)
     assert content['body'] == 'new comment body'
     assert content['owner'] == user2.username
+
+
+@pytest.mark.django_db
+def test_question_likeview_should_like(user1, question1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    res = client.post(f'/questions/{question1.id}/likes')
+    assert res.status_code == 201
+
+
+@pytest.mark.django_db
+def test_question_likeview_should_unlike(user1, question1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    question1.likes.add(user1)
+    question1.refresh_from_db()
+
+    res = client.post(f'/questions/{question1.id}/likes')
+    assert res.status_code == 204
+
+
+@pytest.mark.django_db
+def test_question_likeview_should_toggle(user1, question1):
+    client = APIClient()
+    client.force_authenticate(user1)
+
+    res = client.post(f'/questions/{question1.id}/likes')
+    assert res.status_code == 201
+
+    res = client.post(f'/questions/{question1.id}/likes')
+    assert res.status_code == 204
+
+    res = client.post(f'/questions/{question1.id}/likes')
+    assert res.status_code == 201
